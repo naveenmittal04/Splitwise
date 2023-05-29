@@ -1,7 +1,8 @@
 package com.naveenmittal.splitwise;
 
-import com.naveenmittal.splitwise.commands.CommandExecutor;
-import com.naveenmittal.splitwise.commands.RegisterUserCommand;
+import com.naveenmittal.splitwise.commands.*;
+import com.naveenmittal.splitwise.controllers.GroupController;
+import com.naveenmittal.splitwise.controllers.SettleUpController;
 import com.naveenmittal.splitwise.controllers.UserController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -20,6 +21,10 @@ public class SplitwiseApplication implements CommandLineRunner {
     CommandExecutor commandExecutor;
     @Autowired
     UserController userController;
+    @Autowired
+    GroupController groupController;
+    @Autowired
+    SettleUpController settleUpController;
     public static void main(String[] args) {
         SpringApplication.run(SplitwiseApplication.class, args);
     }
@@ -27,6 +32,13 @@ public class SplitwiseApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         RegisterUserCommand registerUserCommand = new RegisterUserCommand(userController);
+        UpdateProfileCommand updateProfileCommand = new UpdateProfileCommand(userController);
+        AddGroupCommand addGroupCommand = new AddGroupCommand(groupController);
+        UserSettleUpCommand userSettleUpCommand = new UserSettleUpCommand(settleUpController);
+
+        commandExecutor.registerCommand(userSettleUpCommand);
+        commandExecutor.registerCommand(addGroupCommand);
+        commandExecutor.registerCommand(updateProfileCommand);
         commandExecutor.registerCommand(registerUserCommand);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));

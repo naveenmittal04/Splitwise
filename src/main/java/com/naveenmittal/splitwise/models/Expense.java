@@ -12,9 +12,12 @@ import java.util.List;
 public class Expense extends BaseModel{
     private String description;
     @OneToMany
-    private List<ExpenseUser> whoPaidWhat;
-    @OneToMany
-    private List<ExpenseUser> whoOwesWhat;
+    private List<ExpenseUser> expenseUsers;
     @Enumerated(value = EnumType.ORDINAL)
     private ExpenseType expenseType;
+    @ManyToOne
+    private Group group;
+    private Long amount;
+    @ManyToOne
+    private User createdById;
 }

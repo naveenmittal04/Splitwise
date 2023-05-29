@@ -10,7 +10,7 @@ import java.util.List;
 
 @Setter
 @Getter
-@Entity(name = "groups_table")
+@Entity(name = "groupz")
 public class Group extends BaseModel{
     private String name;
     @ManyToOne

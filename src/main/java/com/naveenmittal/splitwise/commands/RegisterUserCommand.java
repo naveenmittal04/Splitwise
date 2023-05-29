@@ -28,15 +28,15 @@ public class RegisterUserCommand implements Command{
         String name = inputs[1];
         String phoneNumber = inputs[2];
         String password = inputs[3];
-         RegisterRequestDto registerRequestDto = new RegisterRequestDto();
-         registerRequestDto.setPhoneNumber(phoneNumber);
-         registerRequestDto.setPassword(password);
-         try {
-             userController.register(registerRequestDto);
-             System.out.println("User registered successfully");
-         } catch (Exception e) {
-             System.out.println(e.getMessage());
-         }
-         return;
+        RegisterRequestDto registerRequestDto = new RegisterRequestDto();
+        registerRequestDto.setPhoneNumber(phoneNumber);
+        registerRequestDto.setPassword(password);
+        try {
+            userController.register(registerRequestDto);
+            System.out.println("User registered successfully");
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+        return;
     }
 }

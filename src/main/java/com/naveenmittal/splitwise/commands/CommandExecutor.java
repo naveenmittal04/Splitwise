@@ -25,8 +25,9 @@ public class CommandExecutor {
         for (Command command : commands) {
             if (command.match(input)) {
                 command.execute(input);
-                break;
+                return;
             }
         }
+        System.out.println("Command Not Found");
     }
 }
