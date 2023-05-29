@@ -6,6 +6,7 @@ import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -17,4 +18,10 @@ public class Group extends BaseModel{
     private User admin;
     @ManyToMany
     private List<User> members;
+
+    public void addMember(User user) {
+        if(this.members == null)
+            this.members = new ArrayList<>();
+        this.members.add(user);
+    }
 }

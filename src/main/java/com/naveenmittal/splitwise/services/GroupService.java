@@ -65,10 +65,9 @@ public class GroupService {
         if(memberOptional.isEmpty()){
             throw new UserNotFoundException();
         }
-        List<User> members = group.getMembers();
-        members.add(memberOptional.get());
-        group.setMembers(members);
-        return groupRepository.save(group);
+        group.addMember(memberOptional.get());
+        Group savedGroup = groupRepository.save(group);
+        return savedGroup;
     }
 
     public List<Transaction> groupSettleUp(Long userId, Long groupId) throws UserNotFoundException, GroupNotFoundException, UserNotAMemberOfGroupException {

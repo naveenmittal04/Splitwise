@@ -1,6 +1,7 @@
 package com.naveenmittal.splitwise;
 
 import com.naveenmittal.splitwise.commands.*;
+import com.naveenmittal.splitwise.controllers.ExpenseController;
 import com.naveenmittal.splitwise.controllers.GroupController;
 import com.naveenmittal.splitwise.controllers.SettleUpController;
 import com.naveenmittal.splitwise.controllers.UserController;
@@ -25,6 +26,9 @@ public class SplitwiseApplication implements CommandLineRunner {
     GroupController groupController;
     @Autowired
     SettleUpController settleUpController;
+
+    @Autowired
+    ExpenseController expenseController;
     public static void main(String[] args) {
         SpringApplication.run(SplitwiseApplication.class, args);
     }
@@ -35,11 +39,23 @@ public class SplitwiseApplication implements CommandLineRunner {
         UpdateProfileCommand updateProfileCommand = new UpdateProfileCommand(userController);
         AddGroupCommand addGroupCommand = new AddGroupCommand(groupController);
         UserSettleUpCommand userSettleUpCommand = new UserSettleUpCommand(settleUpController);
+        AddExpenseCommand addExpenseCommand = new AddExpenseCommand(groupController, expenseController);
+        AddMemberCommand addMemberCommand = new AddMemberCommand(groupController);
+        GroupSettleUpCommand groupSettleUpCommand = new GroupSettleUpCommand(settleUpController);
+        MyTotalCommand myTotalCommand = new MyTotalCommand(settleUpController);
+        UserHistoryCommand userHistoryCommand = new UserHistoryCommand(userController);
+        UserGroupsCommand userGroupsCommand = new UserGroupsCommand(userController);
 
         commandExecutor.registerCommand(userSettleUpCommand);
         commandExecutor.registerCommand(addGroupCommand);
         commandExecutor.registerCommand(updateProfileCommand);
         commandExecutor.registerCommand(registerUserCommand);
+        commandExecutor.registerCommand(addExpenseCommand);
+        commandExecutor.registerCommand(addMemberCommand);
+        commandExecutor.registerCommand(groupSettleUpCommand);
+        commandExecutor.registerCommand(myTotalCommand);
+        commandExecutor.registerCommand(userHistoryCommand);
+        commandExecutor.registerCommand(userGroupsCommand);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
         while(true) {

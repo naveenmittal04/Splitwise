@@ -8,6 +8,7 @@ import com.naveenmittal.splitwise.services.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -48,7 +49,10 @@ public class GroupController {
         GetGroupMembersResponseDto response = new GetGroupMembersResponseDto();
         try {
             List<User> members = groupService.getGroupMembers(request.getGroupId());
-            List<Long> memberIds = members.stream().map(User::getId).collect(java.util.stream.Collectors.toList());
+            List<Long> memberIds = new ArrayList<>();
+            for (User member : members) {
+                memberIds.add(member.getId());
+            }
             response.setMemberIds(memberIds);
             response.setStatus(ResponseStatus.SUCCESS);
         } catch (Exception e) {

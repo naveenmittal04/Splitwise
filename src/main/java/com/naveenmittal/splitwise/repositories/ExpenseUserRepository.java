@@ -8,4 +8,7 @@ import java.util.List;
 public interface ExpenseUserRepository extends JpaRepository<ExpenseUser, Long> {
 
     List<ExpenseUser> findAllById(Long expenseId);
+
+    @Override
+    <S extends ExpenseUser> S save(S entity);
 }

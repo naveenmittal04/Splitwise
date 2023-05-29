@@ -26,7 +26,7 @@ public class AddExpenseCommand implements Command{
     @Override
     public boolean match(String input) {
         String[] inputs = input.split(" ");
-        if(inputs.length > 3) {
+        if(inputs.length < 4) {
             return false;
         }
         if(!inputs[0].startsWith("u")) {
@@ -55,7 +55,11 @@ public class AddExpenseCommand implements Command{
             request.setGroupId(groupId);
             GetGroupMembersResponseDto response = groupController.getGroupMembers(request);
             memberIds = response.getMemberIds();
-            memberIds.sort(Long::compareTo);
+            if(memberIds != null) {
+                memberIds.sort(Long::compareTo);
+            }else{
+                memberIds.add(userId);
+            }
             index++;
         } else {
             memberIds.add(userId);
@@ -104,8 +108,9 @@ public class AddExpenseCommand implements Command{
             }
         } else if(splitType.equals("Equal")) {
             int memberId = 0;
+            assert memberIds != null;
             int size = memberIds.size();
-            while(isNumeric(inputs[index])) {
+            while(memberId < size) {
                 //Long percentageOwed = Long.valueOf(inputs[index]);index++;
                 amountOwedBy.put(memberIds.get(memberId), totalAmountPaid/size);
                 memberId++;
@@ -127,7 +132,7 @@ public class AddExpenseCommand implements Command{
         }
 
         String descritpion = "";
-        if(inputs[index].equals("Desc")){
+        if(inputs[index++].equals("Desc")){
             while(index < inputs.length) {
                 descritpion += inputs[index++] + " ";
             }
@@ -140,6 +145,20 @@ public class AddExpenseCommand implements Command{
         request.setAmountOwedBy(amountOwedBy);
         request.setDescription(descritpion);
         request.setGroupId(groupId);
+
+        System.out.println("Request: ");
+        System.out.println("userId: " + userId);
+        System.out.println("groupId: " + groupId);
+        System.out.println("totalAmountPaid: " + totalAmountPaid);
+        System.out.println("amountPaidBy: ");
+        for(Long paidBy: amountPaidBy.keySet()) {
+            System.out.println("paidBy: " + paidBy + " amount: " + amountPaidBy.get(paidBy));
+        }
+        System.out.println("amountOwedBy: " );
+        for(Long owedBy: amountOwedBy.keySet()) {
+            System.out.println("owedBy: " + owedBy + " amount: " + amountOwedBy.get(owedBy));
+        }
+        System.out.println("descritpion: " + descritpion);
 
         AddExpenseResponseDto response = expenseController.addExpense(request);
         if(response.getStatus() == ResponseStatus.SUCCESS){

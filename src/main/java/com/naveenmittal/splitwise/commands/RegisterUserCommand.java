@@ -15,7 +15,7 @@ public class RegisterUserCommand implements Command{
     }
     @Override
     public boolean match(String input) {
-        return input.startsWith("register");
+        return input.startsWith("Register");
     }
 
     @Override
