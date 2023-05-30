@@ -1,8 +1,10 @@
 package com.naveenmittal.splitwise.commands;
 
 import com.naveenmittal.splitwise.controllers.UserController;
+import com.naveenmittal.splitwise.dtos.ResponseStatus;
 import com.naveenmittal.splitwise.dtos.UserHistoryRequestDto;
 import com.naveenmittal.splitwise.dtos.UserHistoryResponseDto;
+import com.naveenmittal.splitwise.models.Expense;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -43,6 +45,12 @@ public class UserHistoryCommand implements Command{
         request.setUserId(userId);
 
         UserHistoryResponseDto response = userController.userHistory(request);
-
+        if(response.getStatus().equals(ResponseStatus.SUCCESS)){
+            for(Expense expense: response.getExpenses()){
+                System.out.println("Expense "+ expense.getId() + " "+ expense.getDescription() + " "+ expense.getAmount());
+            }
+        } else {
+            System.out.println("Failed to get User Expense History");
+        }
     }
 }

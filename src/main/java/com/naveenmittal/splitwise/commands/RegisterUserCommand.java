@@ -29,6 +29,7 @@ public class RegisterUserCommand implements Command{
         String phoneNumber = inputs[2];
         String password = inputs[3];
         RegisterRequestDto registerRequestDto = new RegisterRequestDto();
+        registerRequestDto.setName(name);
         registerRequestDto.setPhoneNumber(phoneNumber);
         registerRequestDto.setPassword(password);
         try {

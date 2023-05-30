@@ -65,6 +65,16 @@ public class ExpenseService {
             System.out.println("Group : " + groupOptional.get().getName() + " " + groupOptional.get().getId());
         }
 
+        expense.setExpenseType(ExpenseType.ACTUAL_EXPENSE);
+        System.out.println("ExpenseType : " + expense.getExpenseType());
+
+        Expense savedExpnese = null;
+        try {
+            savedExpnese = expenseRepository.save(expense);
+        } catch (Exception e) {
+            System.out.println("Exception : " + e.getMessage());
+        }
+
         List<ExpenseUser> expenseUsers = new ArrayList<>();
         for(Map.Entry<Long, Long> entry : amountPaidBy.entrySet()){
             Optional<User> userOptional = userRepository.findById(entry.getKey());
@@ -74,6 +84,7 @@ public class ExpenseService {
             ExpenseUser expenseUser = new ExpenseUser();
             expenseUser.setUser(userOptional.get());
             expenseUser.setAmount(entry.getValue());
+            expenseUser.setExpense(expense);
             expenseUser.setExpenseUserType(ExpenseUserType.PAID_BY);
             expenseUserRepository.save(expenseUser);
             expenseUsers.add(expenseUser);
@@ -87,21 +98,14 @@ public class ExpenseService {
             ExpenseUser expenseUser = new ExpenseUser();
             expenseUser.setUser(userOptional.get());
             expenseUser.setAmount(entry.getValue());
+            expenseUser.setExpense(expense);
             expenseUser.setExpenseUserType(ExpenseUserType.OWED_BY);
             expenseUserRepository.save(expenseUser);
             expenseUsers.add(expenseUser);
         }
 
-        expense.setExpenseUsers(expenseUsers);
-        expense.setExpenseType(ExpenseType.ACTUAL_EXPENSE);
-        System.out.println("ExpenseType : " + expense.getExpenseType());
+        //expense.setExpenseUsers(expenseUsers);
 
-        Expense savedExpnese = null;
-        try {
-            savedExpnese = expenseRepository.save(expense);
-        } catch (Exception e) {
-            System.out.println("Exception : " + e.getMessage());
-        }
 
         return savedExpnese;
     }

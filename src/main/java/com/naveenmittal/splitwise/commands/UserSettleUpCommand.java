@@ -47,7 +47,7 @@ public class UserSettleUpCommand implements Command{
             UserSettleUpResponseDto response = settleUpController.userSettleUp(userSettleUpRequestDto);
             if(response.getStatus() == ResponseStatus.SUCCESS) {
                 for(Transaction t: response.getTransactions()) {
-                    System.out.println("u"+t.getFrom() + " owes u" + t.getTo() + " " + t.getAmount());
+                    System.out.println("u"+t.getFrom().getId() + " owes u" + t.getTo().getId() + " " + t.getAmount());
                 }
             } else {
                 System.out.println("User settle up failed");

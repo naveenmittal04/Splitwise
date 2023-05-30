@@ -25,8 +25,10 @@ public class SettleUpController {
         try {
             List<Transaction> transactions = userService.userSettleUp(request.getUserId());
             response.setStatus(ResponseStatus.SUCCESS);
+            response.setTransactions(transactions);
         } catch (Exception e) {
             response.setStatus(ResponseStatus.FAILURE);
+            System.out.println(e.getMessage());
         }
         return response;
     }
@@ -49,6 +51,7 @@ public class SettleUpController {
         try {
             List<Transaction> transactions = groupService.groupSettleUp(request.getUserId(), request.getGroupId());
             response.setStatus(ResponseStatus.SUCCESS);
+            response.setTransactions(transactions);
         } catch (Exception e) {
             response.setStatus(ResponseStatus.FAILURE);
             System.out.println(e.getMessage());

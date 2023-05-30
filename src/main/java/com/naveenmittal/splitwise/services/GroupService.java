@@ -19,15 +19,12 @@ public class GroupService {
 
     private ExpenseUserRepository expenseUserRepository;
 
-    private GroupMemberRepository groupMemberRepository;
-
     @Autowired
-    public GroupService(GroupRepository groupRepository, UserRepository userRepository, ExpenseRepository expenseRepository, ExpenseUserRepository expenseUserRepository, GroupMemberRepository groupMemberRepository) {
+    public GroupService(GroupRepository groupRepository, UserRepository userRepository, ExpenseRepository expenseRepository, ExpenseUserRepository expenseUserRepository) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.expenseRepository = expenseRepository;
         this.expenseUserRepository = expenseUserRepository;
-        this.groupMemberRepository = groupMemberRepository;
     }
 
     public Group addGroup(String name, Long adminId) throws GroupAlreadyExistsException, UserNotFoundException {
@@ -82,25 +79,34 @@ public class GroupService {
 
         Group group = groupOptional.get();
         List<User> members = group.getMembers();
-        if(!members.contains(userOptional.get())){
+        Boolean isUserMember = false;
+        for(User member: members){
+            if(member.getId().equals(userId)){
+                isUserMember = true;
+                break;
+            }
+        }
+        if(!isUserMember){
            throw new UserNotAMemberOfGroupException();
         }
 
-        List<Expense> expenses = expenseRepository.findAllById(groupId);
-
-        Map<User, Long> userExtraPaidMap = new HashMap<>();
+        List<Expense> expenses = expenseRepository.findAllByGroupId(groupId);
+        Map<Long, User> usersMap = new HashMap<>();
+        Map<Long, Long> userExtraPaidMap = new HashMap<>();
         for(Expense expense: expenses){
-            List<ExpenseUser> expenseUsers = expenseUserRepository.findAllById(expense.getId());
+            List<ExpenseUser> expenseUsers = expenseUserRepository.findAllByExpenseId(expense.getId());
             for(ExpenseUser expenseUser: expenseUsers){
                 Long amount = expenseUser.getAmount();
                 if(expenseUser.getExpenseUserType().equals(ExpenseUserType.OWED_BY)){
                     amount = -amount;
                 }
-                if(userExtraPaidMap.containsKey(expenseUser.getUser())){
-                    userExtraPaidMap.put(expenseUser.getUser(), userExtraPaidMap.get(expenseUser.getUser()) + amount);
+                if(userExtraPaidMap.containsKey(expenseUser.getUser().getId())){
+                    userExtraPaidMap.put(expenseUser.getUser().getId(), userExtraPaidMap.get(expenseUser.getUser().getId()) + amount);
                 } else {
-                    userExtraPaidMap.put(expenseUser.getUser(), amount);
+                    userExtraPaidMap.put(expenseUser.getUser().getId(), amount);
                 }
+                usersMap.put(expenseUser.getUser().getId(), expenseUser.getUser());
+                //System.out.println(expenseUser.getUser().getPhoneNumber() + " " + userExtraPaidMap.get(expenseUser.getUser().getId()));
             }
         }
 
@@ -115,19 +121,20 @@ public class GroupService {
 
         PriorityQueue<Pair<Long, User>> maxHeap = new PriorityQueue<>((a, b) -> Math.toIntExact(b.getKey() - a.getKey()));
         PriorityQueue<Pair<Long, User>> minHeap = new PriorityQueue<>((a, b) -> Math.toIntExact(a.getKey() - b.getKey()));
-        for(Map.Entry<User, Long> entry: userExtraPaidMap.entrySet()){
+        for(Map.Entry<Long, Long> entry: userExtraPaidMap.entrySet()){
             if(entry.getValue() > 0L){
-                maxHeap.add(Pair.of(entry.getValue(), entry.getKey()));
+                maxHeap.add(Pair.of(entry.getValue(), usersMap.get(entry.getKey())));
             } else {
-                minHeap.add(Pair.of(entry.getValue(), entry.getKey()));
+                minHeap.add(Pair.of(entry.getValue(), usersMap.get(entry.getKey())));
             }
         }
 
         List<Transaction> transactions = new ArrayList<>();
-        while(!minHeap.isEmpty() || !maxHeap.isEmpty()){
+        while(!minHeap.isEmpty() && !maxHeap.isEmpty()){
             Transaction transaction = new Transaction();
             Pair<Long, User> maxHeapTop = maxHeap.poll();
             Pair<Long, User> minHeapTop = minHeap.poll();
+            assert minHeapTop != null;
             if(maxHeapTop.getKey() > Math.abs(minHeapTop.getKey())){
                 // minHeapTop will pay maxHeapTop
                 transaction.setAmount(Math.abs(minHeapTop.getKey()));
@@ -141,6 +148,7 @@ public class GroupService {
                 transaction.setTo(maxHeapTop.getValue());
                 minHeap.add(Pair.of(maxHeapTop.getKey() + minHeapTop.getKey(), minHeapTop.getValue()));
             }
+            //System.out.println("Transaction : "+transaction.getFrom().getName() + " " + transaction.getTo().getName() + " " + transaction.getAmount());
             transactions.add(transaction);
         }
 

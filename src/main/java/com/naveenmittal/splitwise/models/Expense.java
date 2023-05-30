@@ -11,8 +11,8 @@ import java.util.List;
 @Entity
 public class Expense extends BaseModel{
     private String description;
-    @OneToMany
-    private List<ExpenseUser> expenseUsers;
+//    @OneToMany
+//    private List<ExpenseUser> expenseUsers;
     @Enumerated(value = EnumType.ORDINAL)
     private ExpenseType expenseType;
     @ManyToOne

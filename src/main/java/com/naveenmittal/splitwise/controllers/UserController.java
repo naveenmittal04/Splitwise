@@ -24,7 +24,7 @@ public class UserController {
     public RegisterResponseDto register(RegisterRequestDto request) {
         RegisterResponseDto response = new RegisterResponseDto();
         try {
-            User user = userService.registerUser(request.getPhoneNumber(), request.getPassword());
+            User user = userService.registerUser(request.getName(), request.getPhoneNumber(), request.getPassword());
             response.setStatus(ResponseStatus.SUCCESS);
             response.setUserId(user.getId());
         } catch (Exception e) {
@@ -50,6 +50,7 @@ public class UserController {
         try {
             List<Expense> expenses = userService.userHistory(request.getUserId());
             response.setStatus(ResponseStatus.SUCCESS);
+            response.setExpenses(expenses);
         } catch (Exception e) {
             response.setStatus(ResponseStatus.FAILURE);
             System.out.println(e.getMessage());

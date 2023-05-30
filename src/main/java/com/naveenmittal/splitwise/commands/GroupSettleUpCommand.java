@@ -4,6 +4,8 @@ import com.naveenmittal.splitwise.controllers.SettleUpController;
 import com.naveenmittal.splitwise.dtos.GroupSettleUpRequestDto;
 import com.naveenmittal.splitwise.dtos.GroupSettleUpResponseDto;
 import com.naveenmittal.splitwise.controllers.GroupController;
+import com.naveenmittal.splitwise.dtos.ResponseStatus;
+import com.naveenmittal.splitwise.helper.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -49,6 +51,15 @@ public class GroupSettleUpCommand implements Command{
         request.setGroupId(groupId);
 
         GroupSettleUpResponseDto response = settleUpController.groupSettleUp(request);
+
+        if(response.getStatus().equals(ResponseStatus.SUCCESS)){
+            System.out.println("Settle up successful");
+            for(Transaction t: response.getTransactions()) {
+                System.out.println("u"+t.getFrom().getId() + " owes u" + t.getTo().getId() + " " + t.getAmount());
+            }
+        } else {
+            System.out.println("Settle up failed");
+        }
 
     }
 }
